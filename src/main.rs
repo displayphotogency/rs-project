@@ -1,10 +1,9 @@
-fn init_ecs() {
-}
+extern crate cpal;
+extern crate rodio;
 
-fn init_game() {
-    init_ecs();
-}
+mod resource_manager;
+mod gm;
 
 fn main() {
-    init_game();
+    gm::init_gm();
 }
