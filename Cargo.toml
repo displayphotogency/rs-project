@@ -1,14 +1,9 @@
 [package]
 name = "rs-project"
 version = "0.1.0"
-authors = ["jupart <justinwpartain1@gmail.com>"]
+authors = ["dp <displayphotogency@gmail.com>"]
 
 [dependencies]
-png = "0.11"
-gl_generator = "0.6"
-rusttype = "0.2"
-cgmath = "0.15"
-sdl2 = "0.31"
 specs = "0.10"
-rodio = "0.5"
-cpal = "0.5"
+ggez = "0.3"
+rand = "0.3"
