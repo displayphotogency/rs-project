@@ -4,6 +4,15 @@ version = "0.1.0"
 authors = ["dp <displayphotogency@gmail.com>"]
 
 [dependencies]
+nalgebra = "0.13"
+serde = "1.0.21"
+serde_json = "1.0.6"
+serde_derive = "1.0.21"
 specs = "0.10"
-ggez = "0.3"
 rand = "0.3"
+rayon = "0.7.1"
+pushdown-automaton-macro = "0.1"
+
+[dependencies.ggez]
+version = "0.3.3"
+features = ["cargo-resource-root"]
