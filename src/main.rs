@@ -16,7 +16,7 @@ fn main() {
         window_height: 480,
         window_width: 640,
         window_title: String::from("Testing"),
-        window_icon: String::from("icon.png"),
+        window_icon: String::from(""),
         vsync: false,
         resizable: true,
     };
