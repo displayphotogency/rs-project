@@ -3,9 +3,9 @@ use ggez::event::{EventHandler, Keycode, MouseButton, MouseState, Axis,
                   Button, Mod};
 use specs::{World, Dispatcher, DispatcherBuilder};
 
-use std::time::Duration;
-
-use components;
+use components::{register_components};
+use rendering::asset_storage::AssetStorage;
+use map::Map;
 
 pub struct Game<'a, 'b> {
     pub world: World,
@@ -18,36 +18,36 @@ impl <'a, 'b> Game<'a, 'b> {
         let mut world = World::new();
         let mut pc = 0;
 
-        components::register_components(&mut world);
+        register_components(&mut world);
 
-        // let mut asset_storage = AssetStorage::empty();
-        // let map = Map::load(context, "somepathtomap")?;
-        // let RenderableMap {
-        //     background,
-        //     ground_batch,
-        //     objects_batch,
-        //     terrain,
-        // } = RenderableMap::build(map);
-        // asset_storage.images.insert("map-background", background);
-        // asset_storage.batches.insert("map-ground", ground_batch);
-        // asset_storage.batches.insert("map-objects", objects_batch);
+        let mut asset_storage = AssetStorage::empty();
+        let map = Map::load(context)?;
+        let RenderableMap {
+            background,
+            ground_batch,
+            objects_batch,
+            terrain,
+        } = RenderableMap::build(map);
+        asset_storage.images.insert("map-background", background);
+        asset_storage.batches.insert("map-ground", ground_batch);
+        asset_storage.batches.insert("map-objects", objects_batch);
         // world.add_resource(MapTerrain { terrain });
         // load_animations(context, &mut asset_storage)?;
         // world.add_resource::<AssetStorage>(asset_storage);
 
         // world.create_entity().with(Position::new(0.0, 0.0))
-        //                     .with(Renderable {
-        //                         layer: 1,
-        //                         render_type: RenderableType::Batch { id: "map-background" },
-        //                     })
-        //                     .with(ChaseCamera)
-        //                     .build();
+                             // .with(Renderable {
+                                 // layer: 1,
+                                 // render_type: RenderableType::Batch { id: "map-background" },
+                             // })
+                             // .with(ChaseCamera)
+                             // .build();
 
         // world.add_resource(MousePointer(0.0, 0.0));
         // world.add_resource(DeltaTime { delta: 0.0 });
         // world.add_resource(PlayerInput::new());
 
-        let (w, h) = (context.conf.window_width, context.conf.window_height);
+        let (w, h) = (context.conf.window_mode.width, context.conf.window_mode.height);
         let hc = h as f64 / w as f64;
         let fov = w as f64 * 1.5;
 
@@ -69,7 +69,7 @@ impl <'a, 'b> Game<'a, 'b> {
 }
 
 impl<'a, 'b> EventHandler for Game<'a, 'b> {
-    fn update(&mut self, ctx: &mut Context, dt: Duration) -> GameResult<()> {
+    fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
         // if timer::get_ticks(ctx) % 100 == 0 {
         //     println!("FPS: {}", timer::get_fps(ctx));
         // }
@@ -100,7 +100,7 @@ impl<'a, 'b> EventHandler for Game<'a, 'b> {
         Ok(())
     }
 
-    fn key_down_event(&mut self, keycode: Keycode, _keymod: Mod, repeat: bool) {
+    fn key_down_event(&mut self, context: &mut Context, keycode: Keycode, _keymod: Mod, repeat: bool) {
         // let mut input = self.world.write_resource::<PlayerInput>();
 
         // if !repeat {
@@ -117,7 +117,7 @@ impl<'a, 'b> EventHandler for Game<'a, 'b> {
         // }
     }
 
-    fn key_up_event(&mut self, keycode: Keycode, _keymod: Mod, repeat: bool) {
+    fn key_up_event(&mut self, context: &mut Context, keycode: Keycode, _keymod: Mod, repeat: bool) {
         //let mut input = self.world.write_resource::<PlayerInput>();
         //if !repeat {
         //    //wat?
@@ -131,7 +131,7 @@ impl<'a, 'b> EventHandler for Game<'a, 'b> {
         //}
     }
 
-    fn controller_button_down_event(&mut self, btn: Button, _instance_id: i32) {
+    fn controller_button_down_event(&mut self, context: &mut Context, btn: Button, _instance_id: i32) {
         // let mut input = self.world.write_resource::<PlayerInput>();
         // match btn {
         //     Button::A => input.jump = true,
@@ -141,8 +141,8 @@ impl<'a, 'b> EventHandler for Game<'a, 'b> {
         //     _ => (),
         // }
     }
-    fn controller_button_up_event(&mut self, _btn: Button, _instance_id: i32) {}
-    fn controller_axis_event(&mut self, axis: Axis, value: i16, _instance_id: i32) {
+    fn controller_button_up_event(&mut self, context: &mut Context, _btn: Button, _instance_id: i32) {}
+    fn controller_axis_event(&mut self, context: &mut Context, axis: Axis, value: i16, _instance_id: i32) {
         // let mut input = self.world.write_resource::<PlayerInput>();
         // match axis {
         //     Axis::LeftX => {
@@ -168,21 +168,21 @@ impl<'a, 'b> EventHandler for Game<'a, 'b> {
         // }
     }
 
-    fn mouse_button_down_event(&mut self, button: MouseButton, x: i32, y: i32) {
+    fn mouse_button_down_event(&mut self, context: &mut Context, button: MouseButton, x: i32, y: i32) {
         // if button == event::MouseButton::Left {
         //     let p = self.world.read_resource::<Camera>().screen_to_world_coords((x, y));
         //     Player::spawn(&mut self.world, p, false, false, &mut self.player_count)
         // }
     }
 
-    fn mouse_motion_event(&mut self, _state: MouseState, x: i32, y: i32, _: i32, _: i32) {
+    fn mouse_motion_event(&mut self, context: &mut Context, _state: MouseState, x: i32, y: i32, _: i32, _: i32) {
         // let coords = self.world.read_resource::<Camera>().screen_to_world_coords((x, y));
         // let mut mp = self.world.write_resource::<MousePointer>();
         // mp.0 = coords.x;
         // mp.1 = coords.y;
     }
 
-    fn mouse_wheel_event(&mut self, _: i32, _: i32) {
+    fn mouse_wheel_event(&mut self, context: &mut Context, _: i32, _: i32) {
         // let mp = self.world.read_resource::<MousePointer>().clone();
         // let p = Vector2::new(mp.0, mp.1);
         // Player::spawn(&mut self.world, p, false, false, &mut self.player_count);

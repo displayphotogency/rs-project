@@ -14,5 +14,8 @@ rayon = "0.7.1"
 pushdown-automaton-macro = "0.1"
 
 [dependencies.ggez]
-version = "0.3.3"
+git = "https://github.com/ggez/ggez.git"
 features = ["cargo-resource-root"]
+
+[features]
+cargo-resource-root = []
