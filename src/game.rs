@@ -3,9 +3,11 @@ use ggez::event::{EventHandler, Keycode, MouseButton, MouseState, Axis,
                   Button, Mod};
 use specs::{World, Dispatcher, DispatcherBuilder};
 
-use components::{register_components};
+use components::{register_components, Position, Renderable, ChaseCamera, RenderableType};
 use rendering::asset_storage::AssetStorage;
 use map::Map;
+use animation::loader::AnimationLoader;
+use systems;
 
 pub struct Game<'a, 'b> {
     pub world: World,
@@ -21,27 +23,27 @@ impl <'a, 'b> Game<'a, 'b> {
         register_components(&mut world);
 
         let mut asset_storage = AssetStorage::empty();
-        let map = Map::load(context)?;
-        let RenderableMap {
-            background,
-            ground_batch,
-            objects_batch,
-            terrain,
-        } = RenderableMap::build(map);
-        asset_storage.images.insert("map-background", background);
-        asset_storage.batches.insert("map-ground", ground_batch);
-        asset_storage.batches.insert("map-objects", objects_batch);
+        // let map = Map::load(context)?;
+        // let RenderableMap {
+        //     background,
+        //     ground_batch,
+        //     objects_batch,
+        //     terrain,
+        // } = RenderableMap::build(map);
+        // asset_storage.images.insert("map-background", background);
+        // asset_storage.batches.insert("map-ground", ground_batch);
+        // asset_storage.batches.insert("map-objects", objects_batch);
         // world.add_resource(MapTerrain { terrain });
-        // load_animations(context, &mut asset_storage)?;
-        // world.add_resource::<AssetStorage>(asset_storage);
+        AnimationLoader::load_assets(context, &mut asset_storage)?;
+        world.add_resource::<AssetStorage>(asset_storage);
 
-        // world.create_entity().with(Position::new(0.0, 0.0))
-                             // .with(Renderable {
-                                 // layer: 1,
-                                 // render_type: RenderableType::Batch { id: "map-background" },
-                             // })
-                             // .with(ChaseCamera)
-                             // .build();
+        world.create_entity().with(PositionComponent::new(0.0, 0.0))
+                             .with(RenderComponent {
+                                 layer: 1,
+                                 render_type: RenderComponentType::Batch { id: "map-background" },
+                             })
+                             .with(ChaseCameraComponent)
+                             .build();
 
         // world.add_resource(MousePointer(0.0, 0.0));
         // world.add_resource(DeltaTime { delta: 0.0 });
@@ -51,11 +53,13 @@ impl <'a, 'b> Game<'a, 'b> {
         let hc = h as f64 / w as f64;
         let fov = w as f64 * 1.5;
 
-        // world.add_resource(Camera::new(w, h, fov, hc * fov));
+        world.add_resource(Camera::new(w, h, fov, hc * fov));
         // Player::spawn(&mut world, Vector2::new(500.0, 500.0), true, true, &mut pc);
 
         let dispatcher: Dispatcher<'a, 'b> = DispatcherBuilder::new()
-            // .add()
+            .add(systems::Rendering)
+            .add(systems::ChaseCamera)
+            .add(systems::Position)
             .build();
 
         Ok(Game {
@@ -64,8 +68,6 @@ impl <'a, 'b> Game<'a, 'b> {
             dispatcher,
         })
     }
-
-    // fn load_animations(context: Context, storage: &mut AssetStorage) { }
 }
 
 impl<'a, 'b> EventHandler for Game<'a, 'b> {

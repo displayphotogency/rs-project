@@ -8,6 +8,9 @@ extern crate specs;
 #[macro_use]
 extern crate serde_derive;
 
+#[macro_use]
+extern crate specs_derive;
+
 use ggez::{Context, event, graphics};
 use ggez::conf::{Backend, Conf, WindowMode, WindowSetup, FullscreenType, NumSamples};
 
@@ -17,6 +20,7 @@ mod rendering;
 mod sprite;
 mod marker;
 mod map;
+mod animation;
 
 fn main() {
     let default_conf = Conf {
