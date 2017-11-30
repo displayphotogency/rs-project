@@ -7,7 +7,7 @@ use components::{register_components, Position, Renderable, ChaseCamera, Rendera
 use rendering::asset_storage::AssetStorage;
 use map::Map;
 use animation::loader::AnimationLoader;
-use systems;
+use systems{RenderSystem, ChaseCameraSystem, PositionSystem};
 
 pub struct Game<'a, 'b> {
     pub world: World,
@@ -57,9 +57,9 @@ impl <'a, 'b> Game<'a, 'b> {
         // Player::spawn(&mut world, Vector2::new(500.0, 500.0), true, true, &mut pc);
 
         let dispatcher: Dispatcher<'a, 'b> = DispatcherBuilder::new()
-            .add(systems::Rendering)
-            .add(systems::ChaseCamera)
-            .add(systems::Position)
+            .add(systems::RenderSystem)
+            .add(systems::ChaseCameraSystem)
+            .add(systems::PositionSystem)
             .build();
 
         Ok(Game {
