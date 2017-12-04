@@ -1,10 +1,10 @@
 use ggez::{Context, GameResult};
-use ggez::graphics::{Image, DrawParam, Vector2};
-use ggez::graphics::spritebatch::{SpriteBatch, SpriteIdx};
+use ggez::graphics::Image;
+use ggez::graphics::spritebatch::SpriteBatch;
 
-use marker::geom::{Rect, Point, Size};
-use marker::{Horizontal, Square};
-use sprite::MarkedTiles;
+// use marker::geom::{Rect, Point, Size};
+// use marker::{Horizontal, Square};
+// use sprite::MarkedTiles;
 
 pub use self::loaded::LoadedAssets;
 pub use self::terrain::Terrain;

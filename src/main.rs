@@ -21,6 +21,7 @@ mod sprite;
 mod marker;
 mod map;
 mod animation;
+mod systems;
 
 fn main() {
     let default_conf = Conf {

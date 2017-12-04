@@ -3,11 +3,17 @@ use ggez::event::{EventHandler, Keycode, MouseButton, MouseState, Axis,
                   Button, Mod};
 use specs::{World, Dispatcher, DispatcherBuilder};
 
-use components::{register_components, Position, Renderable, ChaseCamera, RenderableType};
+use components::{register_components,
+                 PositionComponent,
+                 RenderComponent,
+                 // ScaleComponent,
+                 ChaseCameraComponent,
+                 RenderComponentType};
 use rendering::asset_storage::AssetStorage;
-use map::Map;
+use rendering::camera::Camera;
+// use map::Map;
 use animation::loader::AnimationLoader;
-use systems{RenderSystem, ChaseCameraSystem, PositionSystem};
+// use systems::{RenderSystem, ChaseCameraSystem, PositionSystem};
 
 pub struct Game<'a, 'b> {
     pub world: World,
@@ -18,7 +24,7 @@ pub struct Game<'a, 'b> {
 impl <'a, 'b> Game<'a, 'b> {
     pub fn new(context: &mut Context) -> GameResult<Game<'a, 'b>> {
         let mut world = World::new();
-        let mut pc = 0;
+        let pc = 0;
 
         register_components(&mut world);
 
@@ -50,16 +56,16 @@ impl <'a, 'b> Game<'a, 'b> {
         // world.add_resource(PlayerInput::new());
 
         let (w, h) = (context.conf.window_mode.width, context.conf.window_mode.height);
-        let hc = h as f64 / w as f64;
-        let fov = w as f64 * 1.5;
+        let hc = h as f32 / w as f32;
+        let fov = w as f32 * 1.5;
 
         world.add_resource(Camera::new(w, h, fov, hc * fov));
         // Player::spawn(&mut world, Vector2::new(500.0, 500.0), true, true, &mut pc);
 
         let dispatcher: Dispatcher<'a, 'b> = DispatcherBuilder::new()
-            .add(systems::RenderSystem)
-            .add(systems::ChaseCameraSystem)
-            .add(systems::PositionSystem)
+            // .add(RenderSystem)
+            // .add(ChaseCameraSystem)
+            // .add(PositionSystem)
             .build();
 
         Ok(Game {

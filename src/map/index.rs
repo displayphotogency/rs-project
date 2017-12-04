@@ -3,7 +3,7 @@ use rand;
 
 use super::LoadedAssets;
 use marker::geom::Rect;
-use marker::{Square, Horizontal, SpriteType};
+use marker::{Square, SpriteType};
 
 #[derive(Debug)]
 struct GroundIndex {

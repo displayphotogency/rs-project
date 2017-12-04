@@ -1,7 +1,5 @@
-use ggez;
-use ggez::GameResult;
-use ggez::graphics;
-use ggez::graphics::{Vector2, DrawParam};
+use ggez::{Context, GameResult};
+use ggez::graphics::{Point2, Vector2, DrawParam, Drawable};
 
 use nalgebra;
 
@@ -30,8 +28,8 @@ impl Camera {
         self.view_center = to;
     }
 
-    pub fn draw_scale(&self) -> graphics::Point2 {
-        graphics::Point2::new(
+    pub fn draw_scale(&self) -> Point2 {
+        Point2::new(
             (self.screen_size.x / self.view_size.x) as f32,
             (self.screen_size.y / self.view_size.y) as f32,
         )
@@ -70,8 +68,56 @@ impl Camera {
         self.view_size
     }
 
-    pub fn calculate_dest_point(&self, location: Vector2) -> graphics::Point2 {
+    pub fn calculate_dest_point(&self, location: Vector2) -> Point2 {
         let (sx, sy) = self.world_to_screen_coords(location);
-        graphics::Point2::new(sx as f32, sy as f32)
+        Point2::new(sx as f32, sy as f32)
     }
+}
+
+pub trait CameraDraw
+where
+    Self: Drawable, {
+    fn draw_ex_camera(
+        &self,
+        camera: &Camera,
+        ctx: &mut Context,
+        p: DrawParam,
+    ) -> GameResult<()> {
+        let dest = Vector2::new(p.dest.x as f32, p.dest.y as f32);
+        let dest = camera.calculate_dest_point(dest);
+        let scale = camera.draw_scale();
+        let orig_scale = p.scale.clone();
+        let mut my_p = p;
+        my_p.dest = dest;
+        my_p.scale = Point2::new(orig_scale.x * scale.x, orig_scale.y * scale.y);
+        self.draw_ex(ctx, my_p)
+    }
+
+    fn draw_camera(
+        &self,
+        camera: &Camera,
+        ctx: &mut Context,
+        dest: Point2,
+        rotation: f32,
+    ) -> GameResult<()> {
+        let dest = Vector2::new(dest.x as f32, dest.y as f32);
+        let dest = camera.calculate_dest_point(dest);
+        let scale = camera.draw_scale();
+        self.draw_ex(
+            ctx,
+            DrawParam {
+                dest,
+                scale,
+                rotation,
+                ..Default::default()
+            },
+        )
+    }
+}
+
+
+impl<T> CameraDraw for T
+where
+    T: Drawable,
+{
 }

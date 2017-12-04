@@ -1,3 +1,4 @@
+use ggez::graphics::Vector2;
 use specs::{World, VecStorage, DenseVecStorage, NullStorage};
 
 #[derive(Debug, Component, Copy, Clone)]
@@ -73,8 +74,34 @@ pub struct ScaleComponent {
 }
 
 impl ScaleComponent {
-    pub fn new(x: f32, y: f32) -> Scalable {
-        Scalable { x, y }
+    pub fn new(x: f32, y: f32) -> ScaleComponent {
+        ScaleComponent { x, y }
+    }
+}
+
+#[derive(Debug, Component)]
+#[component(DenseVecStorage)]
+pub struct MovingObjectComponent {
+    pub old_position: Vector2,
+    pub position: Vector2,
+
+    pub old_accel: Vector2,
+    pub accel: Vector2,
+
+    pub old_velocity: Vector2,
+    pub velocity: Vector2,
+}
+
+impl MovingObjectComponent {
+    pub fn new(position: Vector2) -> MovingObjectComponent {
+        MovingObjectComponent {
+            old_position: position.clone(),
+            position: position,
+            old_accel: Vector2::new(0.0, 0.0),
+            accel: Vector2::new(0.0, 0.0),
+            old_velocity: Vector2::new(0.0, 0.0),
+            velocity: Vector2::new(0.0, 0.0),
+        }
     }
 }
 
